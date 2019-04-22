@@ -32,6 +32,11 @@ import moment from 'moment-timezone'
   })
   Vue.prototype.moment = moment
 
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
+import 'firebase/storage'
+
 
 Vue.config.productionTip = false
 
@@ -41,4 +46,15 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
+  created () {
+    var config = {
+      apiKey: "AIzaSyBAcHjaRVCGKHQ_00yPZoR7XQEP0i3-4ac",
+      authDomain: "keka9000-seed.firebaseapp.com",
+      databaseURL: "https://keka9000-seed.firebaseio.com",
+      projectId: "keka9000-seed",
+      storageBucket: "keka9000-seed.appspot.com",
+      messagingSenderId: "148174200601"
+    };
+    firebase.initializeApp(config);
+  }
 })

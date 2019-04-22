@@ -103,8 +103,8 @@
 
             this.$store.dispatch('loadTasks')
 
-          },
 
+          },
 
           logout: function () {
 

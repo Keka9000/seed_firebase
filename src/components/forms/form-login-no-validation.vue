@@ -37,8 +37,6 @@
 
 <script>
 
-    import my_users from '@/assets/data/users.js'
-
     export default {
 
         data: () => ({
@@ -54,9 +52,7 @@
 
         }),
 
-        created: function () {
-
-        },
+        created: function () {},
 
         mounted: function () {
 

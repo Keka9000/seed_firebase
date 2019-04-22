@@ -1,6 +1,5 @@
-import test_users from '@/assets/data/users.js'
+import firebase from 'firebase/app'
 
-// sessionStorage.removeItem('user')
 const sessionAutorized = JSON.parse(sessionStorage.getItem('user'))
 
 export default {
@@ -39,11 +38,13 @@ export default {
 
         try {
 
-          const testUsers = await test_users
+          const baseUser = await firebase.database().ref('users').once('value')
+          const baseUsers = baseUser.val()
+          console.log('users loaded on users store', baseUsers)
 
           var valid = false
 
-          testUsers.forEach(user => {
+          baseUsers.forEach(user => {
 
               if(user.login == data.login && user.password == data.password) {
 

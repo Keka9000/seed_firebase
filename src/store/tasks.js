@@ -1,11 +1,10 @@
 import test_tasks from '@/assets/data/tasks.js'
 
-// sessionStorage.removeItem('tasks')
-const sessionTasks = JSON.parse(sessionStorage.getItem('tasks'))
+import firebase from 'firebase/app'
 
 export default {
 
-  state: ( sessionTasks ) ? sessionTasks : [],
+  state: [],
 
   mutations: {
 
@@ -33,20 +32,28 @@ export default {
 
     },
 
+    CLEAR_STATE (state) {
+
+      state = []
+
+    },
+
   },
 
   actions: {
 
     async loadTasks ({ commit, state }) {
 
-      if(state.length == 0) {
         try {
 
-          const testTasks = await test_tasks
-          commit('LOAD_TASKS', testTasks)
-          sessionStorage.setItem('tasks', JSON.stringify(testTasks))
+          const baseTask = await firebase.database().ref('tasks').once('value')
+          const baseTasks = baseTask.val()
+          console.log('tasks loaded on tasks store', baseTasks)
 
-          return testTasks
+          commit('CLEAR_STATE')
+          commit('LOAD_TASKS', baseTasks)
+
+          return baseTasks
 
         }
         catch (error) {
@@ -54,46 +61,67 @@ export default {
           throw error
 
         }
+    },
+
+    async addTask ({ commit, getters }, data) {
+
+        try {
+
+          var tasks = getters.getTasks
+          await firebase.database().ref('tasks').child(tasks.length).set(data)
+          commit('ADD_TASK', data)
+
+        }
+        catch (error) {
+
+          throw error
+
+        }
+
+    },
+
+    async changeTask ({ commit, state, getters }, data) {
+
+      var tasks = getters.getTasks
+      var taskIndex
+      tasks.forEach((item, index) => {
+        if(item.id == data.id) {
+          taskIndex = index
+        }
+      })
+      try {
+
+        await firebase.database().ref('tasks').child(taskIndex).set(data)
+
       }
-    },
+      catch (error) {
 
-    addTask ({ commit, getters }, data) {
+        throw error
 
-        commit('ADD_TASK', data)
-
-        sessionStorage.setItem('tasks', JSON.stringify(getters.getTasks))
+      }
 
     },
 
-    changeTask ({ commit, state, getters }, data) {
+    async removeTask ({ commit, state, getters }, data) {
 
-      state.forEach((task, index) => {
-
-        if(task.id == data.id) {
-
-          commit('CHANGE_TASK', {data, index})
-
-          sessionStorage.setItem('tasks', JSON.stringify(getters.getTasks))
-
+      var tasks = getters.getTasks
+      var taskIndex
+      tasks.forEach((item, index) => {
+        if(item.id == data.id) {
+          taskIndex = index
         }
-
       })
+      try {
 
-    },
+        await firebase.database().ref('tasks').child(taskIndex).remove()
+        commit('REMOVE_TASK', taskIndex)
 
-    removeTask ({ commit, state, getters }, data) {
+      }
+      catch (error) {
 
-      state.forEach((task, index) => {
+        throw error
 
-        if(task.id == data.id) {
-          console.log('REMOVE TASK ID: ', task.id)
-          commit('REMOVE_TASK', index)
-
-          sessionStorage.setItem('tasks', JSON.stringify(getters.getTasks))
-
-        }
-
-      })
+      }
 
     },
 

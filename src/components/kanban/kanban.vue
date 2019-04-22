@@ -113,13 +113,13 @@
 
       onCardCreated: function (payload) {
 
-        confirm('Уверены?') && this.$store.dispatch('addTask', payload)
+        this.$store.dispatch('addTask', payload)
 
       },
 
       onCardDeleted: function (payload) {
 
-        this.$store.dispatch('removeTask', payload)
+        confirm('Уверены?') && this.$store.dispatch('removeTask', payload)
 
       },
     }
