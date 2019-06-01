@@ -10,6 +10,7 @@ export default {
 
     LOAD_TASKS (state, data) {
 
+        // state = []
         data.forEach(task => {state.push(task)})
 
     },
@@ -42,25 +43,28 @@ export default {
 
   actions: {
 
-    async loadTasks ({ commit, state }) {
+    async loadTasks ({ commit, state, getters }) {
 
-        try {
+          try {
 
-          const baseTask = await firebase.database().ref('tasks').once('value')
-          const baseTasks = baseTask.val()
-          console.log('tasks loaded on tasks store', baseTasks)
+            if(getters.getTasks.length !== 0) {
+              return
+            }
 
-          commit('CLEAR_STATE')
-          commit('LOAD_TASKS', baseTasks)
+            const baseTask = await firebase.database().ref('tasks').once('value')
+            const baseTasks = baseTask.val()
+            console.log('tasks loaded on tasks store', baseTasks)
 
-          return baseTasks
+            commit('LOAD_TASKS', baseTasks)
 
-        }
-        catch (error) {
+            return baseTasks
 
-          throw error
+          }
+          catch (error) {
 
-        }
+            throw error
+
+          }
     },
 
     async addTask ({ commit, getters }, data) {
